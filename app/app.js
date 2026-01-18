@@ -18,7 +18,17 @@ app.get('/webhook', (req, res) => {
   }
 });
 
-app.post('/webhook', async (req, res) => {
+app.post('/webhook', (req, res) => {
+  // Hii itachapisha kila kitu kinachoingia kutoka Meta
+  console.log("----------------------------");
+  console.log("KUNA KITU KIMEINGIA KUTOKA META!");
+  console.log(JSON.stringify(req.body, null, 2)); 
+  console.log("----------------------------");
+
+  res.sendStatus(200);
+});
+
+/* app.post('/webhook', async (req, res) => {
   // 1. Pokea meseji
   const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 
@@ -51,6 +61,8 @@ app.post('/webhook', async (req, res) => {
       console.error("❌ Kosa la kutuma:", error.response?.data || error.message);
     }
   }
+
+  */
 
   res.sendStatus(200);
 });
