@@ -18,18 +18,17 @@ app.get('/webhook', (req, res) => {
   }
 });
 
-// 2. WEBHOOK RECEIVER (Kupokea na kurudisha jibu)
 app.post('/webhook', async (req, res) => {
-  const body = req.body;
+  // 1. Pokea meseji
+  const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 
-  // Angalia kama kuna meseji imeingia
-  if (body.object && body.entry?.[0]?.changes?.[0]?.value?.messages?.[0]) {
-    const from = body.entry[0].changes[0].value.messages[0].from; // Namba ya mteja
-    const msgText = body.entry[0].changes[0].value.messages[0].text.body; // Meseji aliyoandika
+  if (message) {
+    const from = message.from; // Hapa itachukua "255787885020"
+    const text = message.text.body; // Hapa itachukua "habari"
 
-    console.log(`📩 Mteja (${from}) ameandika: ${msgText}`);
+    console.log(`Meseji imepokelewa kutoka ${from}: ${text}`);
 
-    // JARIBIO LA KUREPLY: Tunatuma meseji ya kawaida
+    // 2. Tuma jibu
     try {
       await axios.post(
         `https://graph.facebook.com/v22.0/${process.env.PHONE_NUMBER_ID}/messages`,
@@ -37,17 +36,22 @@ app.post('/webhook', async (req, res) => {
           messaging_product: "whatsapp",
           to: from,
           type: "text",
-          text: { body: `Asante kwa kuwasiliana na Imarisha Mikopo! Tumepokea meseji yako: "${msgText}"` }
+          text: { body: "Karibu! Mfumo wa Imarisha umepokea meseji yako." }
         },
-        { headers: { Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}` } }
+        { 
+          headers: { 
+            Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+            'Content-Type': 'application/json'
+          } 
+        }
       );
-      console.log("✅ Jibu limetumwa kwa mafanikio!");
+      console.log("✅ Jibu limetumwa!");
     } catch (error) {
-      console.error("❌ Kosa limetokea:", error.response?.data || error.message);
+      // Hapa utaona kosa kama Token ni mbaya
+      console.error("❌ Kosa la kutuma:", error.response?.data || error.message);
     }
   }
 
-  res.sendStatus(200); // Lazima umjibu Meta "200 OK"
+  res.sendStatus(200);
 });
-
 app.listen(3000, () => console.log("🚀 Server ya Imarisha iko hewani!"));
