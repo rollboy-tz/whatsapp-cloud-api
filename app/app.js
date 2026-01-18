@@ -62,8 +62,8 @@ app.post('/webhook', (req, res) => {
     }
   }
 
-  */
+  
 
   res.sendStatus(200);
-});
+}); */
 app.listen(3000, () => console.log("🚀 Server ya Imarisha iko hewani!"));
